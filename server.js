@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 require('dotenv').config();
 
 const app = express();
@@ -10,9 +11,25 @@ app.use(cors());
 app.use(express.json());
 
 // Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✓ MongoDB conectado'))
-  .catch(err => console.log('✗ Error MongoDB:', err));
+async function connectDB() {
+  try {
+    // Si hay URI de Atlas, usarla; sino, usar memoria
+    const mongoUri = process.env.MONGODB_URI || await startMemoryDB();
+    await mongoose.connect(mongoUri);
+    console.log('✓ MongoDB conectado');
+  } catch (err) {
+    console.log('✗ Error MongoDB:', err);
+  }
+}
+
+async function startMemoryDB() {
+  const mongod = await MongoMemoryServer.create();
+  const uri = mongod.getUri();
+  console.log('Usando MongoDB en memoria:', uri);
+  return uri;
+}
+
+connectDB();
 
 // Rutas
 app.use('/api/games', require('./routes/games'));
