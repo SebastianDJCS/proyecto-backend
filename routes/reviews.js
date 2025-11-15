@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Review = require('../models/Review');
+const auth = require('../middleware/auth');
 
 // Obtener reseñas por gameId
 router.get('/:gameId', async (req, res) => {

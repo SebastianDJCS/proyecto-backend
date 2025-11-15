@@ -32,6 +32,7 @@ async function startMemoryDB() {
 connectDB();
 
 // Rutas
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/games', require('./routes/games'));
 app.use('/api/reviews', require('./routes/reviews'));
 
